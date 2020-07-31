@@ -54,16 +54,9 @@
 	("" "amsmath" t)
 	("theorems, skins" "tcolorbox" t)
 
-	;; used for marking up chemical formulars
-	("version=3" "mhchem" t)
-
-	("numbers,super,sort&compress" "natbib" nil)
-	("" "natmove" nil)
-
+	
 	("" "url" nil)
-	;; this is used for syntax highlighting of code
-	("cache=false" "minted" nil)
-
+	
 	;; this allows you to use underscores in places like filenames. I still
 	;; wouldn't do it.
 	("strings" "underscore" nil)
