@@ -17,6 +17,7 @@
 (add-to-list 'package-selected-packages 'flx)
 (add-to-list 'package-selected-packages 'counsel)
 (add-to-list 'package-selected-packages 'ebib)
+(add-to-list 'package-selected-packages 'color)
 
 ;; Don't remove this:
 (unless (every 'package-installed-p package-selected-packages)
@@ -118,9 +119,9 @@
 
 
  
-(setq ergoemacs-theme nil) ;; Uses Standard Ergoemacs keyboard theme
-(setq ergoemacs-keyboard-layout "us") ;; Assumes QWERTY keyboard layout
-(ergoemacs-mode 1)
+;; (setq ergoemacs-theme nil) ;; Uses Standard Ergoemacs keyboard theme
+;; (setq ergoemacs-keyboard-layout "us") ;; Assumes QWERTY keyboard layout
+;; (ergoemacs-mode 1)
 
 ;; == Load Custom Theme ==
 
@@ -186,3 +187,10 @@
       '((ivy-switch-buffer . ivy--regex-plus)
         (t . ivy--regex-fuzzy)))
 (setq ivy-initial-inputs-alist nil)
+
+
+;;;; Background color ;;;
+;; (set-face-background 'org-block nil)
+;; (set-face-attribute 'org-block nil :background
+;;                     (color-darken-name
+;;                      (face-attribute 'default :background) 3))

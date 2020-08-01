@@ -18,27 +18,27 @@
 ;; * Colored src blocks
 
 (defface org-block-emacs-lisp
-  `((t (:background "LightCyan1")))
+  `((t (:background nil)))
   "Face for elisp src blocks")
 
 
 (defface org-block-python
-  `((t (:background "DarkSeaGreen1")))
+  `((t (:background nil)))
   "Face for python blocks")
 
 
 (defface org-block-ipython
-  `((t (:background "thistle1")))
+  `((t (:background nil)))
   "Face for python blocks")
 
 
 (defface org-block-jupyter-hy
-  `((t (:background "light goldenrod yellow")))
+  `((t (:background nil)))
   "Face for hylang blocks")
 
 
 (defface org-block-sh
-  `((t (:background "gray90")))
+  `((t (:background nil)))
   "Face for python blocks")
 
 
