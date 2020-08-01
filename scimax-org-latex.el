@@ -52,7 +52,7 @@
 	("" "wasysym" t)
 	("" "amssymb" t)
 	("" "amsmath" t)
-	("theorems, skins" "tcolorbox" t)[
+	("theorems, skins" "tcolorbox" t)
 	
 	;; Abnt related configuration
 	("style=abnt,noslsn,extrayear,uniquename=init,giveninits,justify,sccite,
