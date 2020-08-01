@@ -4,7 +4,6 @@
 ;; (add-to-list 'package-selected-packages 'ess)
 ;; will ensure that the ess package is installed the next time Emacs starts.
 (add-to-list 'package-selected-packages 'spacemacs-theme)
-(add-to-list 'package-selected-packages 'use-package)
 (add-to-list 'package-selected-packages 'elfeed)
 (add-to-list 'package-selected-packages 'elfeed-org)
 (add-to-list 'package-selected-packages 'ergoemacs-mode)
@@ -14,8 +13,6 @@
 (add-to-list 'package-selected-packages 'pythonic)
 (add-to-list 'package-selected-packages 'poetry)
 (add-to-list 'package-selected-packages 'recentf)
-(add-to-list 'package-selected-packages 'jupyter)
-(add-to-list 'package-selected-packages 'straight)
 (add-to-list 'package-selected-packages 'org-ref)
 (add-to-list 'package-selected-packages 'flx)
 (add-to-list 'package-selected-packages 'counsel)
