@@ -28,7 +28,7 @@
 (setq org-export-with-sub-superscripts '{})
 
 (setq org-latex-default-packages-alist
-      '(("AUTO" "inputenc" t)
+      '(("utf8" "inputenc" t)
 
 	;; this is for having good fonts
 	("" "lmodern" nil)
@@ -37,7 +37,7 @@
 	("T1" "fontenc" t)
 
 	;; This makes standard margins
-	("top=1in, bottom=1.in, left=1in, right=1in" "geometry" nil)
+	("top=2cm, bottom=2cm, left=2cm, right=2cm" "geometry" nil)
 	("" "graphicx" t)
 	("" "longtable" nil)
 	("" "float" nil)
@@ -52,7 +52,12 @@
 	("" "wasysym" t)
 	("" "amssymb" t)
 	("" "amsmath" t)
-	("theorems, skins" "tcolorbox" t)
+	("theorems, skins" "tcolorbox" t)[
+	
+	;; Abnt related configuration
+	("style=abnt,noslsn, extrayear, uniquename=init, giveninits,justify,sccite,
+	 scbib, repeattitles, doi=false,isbn=false,url=false, maxcitenames=2, 
+	 natbib=true,backend=biber" "biblatex" t)
 
 	
 	("" "url" nil)
@@ -70,6 +75,9 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 
 	;; set default spacing
 	("" "setspace" nil)
+	
+	;; Tikz related packages
+	("" "tikz" t)
 
 	))
 
@@ -96,7 +104,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 (add-to-list 'org-latex-classes
 	     '("article-1"                          ;class-name
 	       "\\documentclass{article}
-\\usepackage[top=1in, bottom=1.in, left=1in, right=1in]{geometry}
+\\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
  [PACKAGES]
  [EXTRA]" ;;header-string
 	       ("\\section{%s}" . "\\section*{%s}")
