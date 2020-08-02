@@ -102,6 +102,9 @@
 
 (set-language-environment "UTF-8")
 
+
+
+
 (require 'bootstrap)
 (require 'packages)
 
@@ -111,6 +114,7 @@
   (load-library "help"))
 
 (setq gc-cons-threshold 800000)
+
 
 (provide 'init)
 

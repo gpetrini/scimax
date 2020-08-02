@@ -64,7 +64,7 @@ natbib=true,backend=biber" "biblatex" t)
 	
 	;; this allows you to use underscores in places like filenames. I still
 	;; wouldn't do it.
-	("strings" "underscore" nil)
+	;; ("strings" "underscore" nil)
 	("linktocpage,pdfstartview=FitH,colorlinks,
 linkcolor=blue,anchorcolor=blue,
 citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"

@@ -1,7 +1,8 @@
 ;; Put your personal user configuration in this file.
 
+
 ;; To require addional packages add them to 'package-selected-packages, e.g.
-;; (add-to-list 'package-selected-packages 'ess)
+(add-to-list 'package-selected-packages 'ess)
 ;; will ensure that the ess package is installed the next time Emacs starts.
 (add-to-list 'package-selected-packages 'spacemacs-theme)
 (add-to-list 'package-selected-packages 'elfeed)
@@ -154,15 +155,13 @@
 ;; Display inline images after running code
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
-(org-latex-pdf-process   '("latexmk -shell-escape -biber -pdf %f"))))
+(setq org-latex-pdf-process
+      '("pdflatex -interaction nonstopmode -output-directory %o %f"
+        "biber %b"
+        "pdflatex -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -interaction nonstopmode -output-directory %o %f"))
 
-;; neotree
-;;
-(add-to-list 'load-path "~/.emacs.d/neotree")
-(require 'neotree)
-(setq neo-smart-open t)
-(global-set-key [(control ?\\)] 'neotree-toggle) ;; atom key
-
+;; TODO Neotree
 
 ;; line-numbers
 (global-linum-mode t)
@@ -174,7 +173,7 @@
 	  (wich-key-setup-side-window-right-bottom)
 	  (which-key-mode)
 	)
-(setq bibtex-dialect 'biblatex)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Recent files https://emacs.stackexchange.com/questions/44589/how-show-recent-files
 
@@ -194,3 +193,6 @@
 ;; (set-face-attribute 'org-block nil :background
 ;;                     (color-darken-name
 ;;                      (face-attribute 'default :background) 3))
+
+
+
