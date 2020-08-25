@@ -4,7 +4,11 @@
 (add-to-list 'package-selected-packages 'pythonic)
 (add-to-list 'package-selected-packages 'poetry)
 (add-to-list 'package-selected-packages 'flx)
-(add-to-list 'package-selected-packages 'counsel)
+(add-to-list 'package-selected-packages 'counsel)	
+(add-to-list 'package-selected-packages 'company-backends)
+(add-to-list 'package-selected-packages 'julia-mode)
+(add-to-list 'package-selected-packages 'julia-repl)
+;; (add-to-list 'package-selected-packages 'ob-julia)
 
 (add-to-list 'package-selected-packages 'elfeed)
 (add-to-list 'package-selected-packages 'elfeed-org)
@@ -12,6 +16,17 @@
 
 (add-to-list 'package-selected-packages 'spacemacs-theme)
 (add-to-list 'package-selected-packages 'ergoemacs-mode)
+(add-to-list 'package-selected-packages 'dashboard)
+(add-to-list 'package-selected-packages 'pdf-tools)
+
+;; Don't remove this:
+(unless (every 'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (package-install 'use-package)
+  (package-install-selected-packages))
+
+(use-package delight :ensure t)
+(use-package use-package-ensure-system-package :ensure t)
 
 (custom-set-variables
  '(ansi-color-names-vector
@@ -90,7 +105,16 @@
               ("R" . gps/elfeed-mark-all-as-read)
               ("q" . gps/elfeed-save-db-and-bury)))
 
+;; (load-file "~/scimax/ob-julia.el")
+(require 'ess-site)
+(setq inferior-julia-program-name "julia")
+(setq ess-use-auto-complete t)
+(setq ess-tab-complete-in-script t)
+
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)                 ; optional
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -99,8 +123,7 @@
    (ipython . t)
    (jupyter . t)
    (octave . t)
-   (C . t)
-   (shell . t)
+   (julia . t)
    ))
 
 (setq org-latex-pdf-process
@@ -108,6 +131,28 @@
         "biber %b"
         "pdflatex -interaction nonstopmode -output-directory %o %f"
         "pdflatex -interaction nonstopmode -output-directory %o %f"))
+
+(setq org-latex-prefer-user-labels t)
+
+(use-package company
+  :defer 0.5
+  :delight
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay 0)
+  (company-minimum-prefix-length 2)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t))
+
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+
+(use-package company-anaconda
+  :after (anaconda-mode company)
+  :config (add-to-list 'company-backends 'company-anaconda))
 
 (cua-mode t)
 (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
@@ -121,16 +166,19 @@
 
 
 (use-package which-key
-	:ensure t
-	:config 
-	(progn
-	  (wich-key-setup-side-window-right-bottom)
-	  (which-key-mode)
-	)
+ 	:ensure t
+;; 	:config 
+;; 	(progn
+;;	  (wich-key-setup-side-window-right-bottom)
+;; 	  (which-key-mode)
+;;	)
+)
 
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
+
+(org-babel-load-file "~/scimax/scimax-editmarks.org")
 
 (setq ivy-re-builders-alist
       '((ivy-switch-buffer . ivy--regex-plus)
@@ -143,7 +191,41 @@
   :defer t
   :ensure t)
 
-;; Don't remove this:
-(unless (every 'package-installed-p package-selected-packages)
-  (package-refresh-contents)
-  (package-install-selected-packages))
+(use-package pdf-tools
+  :defer 1
+  :magic ("%PDF" . pdf-view-mode)
+  :init (pdf-tools-install :no-query))
+
+(use-package pdf-view
+  :ensure nil
+  :after pdf-tools
+  :bind (:map pdf-view-mode-map
+              ("C-s" . isearch-forward)
+              ("d" . pdf-annot-delete)
+              ("h" . pdf-annot-add-highlight-markup-annotation)
+              ("t" . pdf-annot-add-text-annotation))
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-view-resize-factor 1.1)
+  (pdf-view-use-unicode-ligther nil))
+
+(use-package dashboard
+  :if (< (length command-line-args) 2)
+  :preface
+  (defun dashboard-load-packages (list-size)
+    (insert (make-string (ceiling (max 0 (- dashboard-banner-length 38)) 5) ? )
+            (format "%d packages loaded in %s" (length package-activated-list) (emacs-init-time))))
+  :custom
+  (dashboard-banner-logo-title "With Great Power Comes Great Responsibility")
+  (dashboard-center-content t)
+  (dashboard-items '((packages)
+                     (agenda)
+                     (projects . 5)))
+  (dashboard-set-file-icons t)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-init-info nil)
+  (dashboard-set-navigator t)
+  (dashboard-startup-banner 'logo)
+  :config
+  (add-to-list 'dashboard-item-generators '(packages . dashboard-load-packages))
+  (dashboard-setup-startup-hook))
