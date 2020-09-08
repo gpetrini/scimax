@@ -4,7 +4,11 @@
 
 
 ;;; Code:
-(require 'org)
+(use-package org
+  :ensure org-plus-contrib
+  :config
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines)))
 (require 'org-inlinetask)
 (require 'org-mouse)
 (require 'org-ref)

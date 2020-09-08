@@ -1,36 +1,13 @@
 ;;; ob-julia.el --- org-babel functions for julia code evaluation
 
-;; Copyright (C) 2013, 2014 G. Jay Kerns
+;; Copyright (C) 2013
 ;; Author: G. Jay Kerns, based on ob-R.el by Eric Schulte and Dan Davison
 
-;; This file is not part of GNU Emacs.
-
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
-;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
-
-;;; Commentary:
-
-;; The file provides Org-Babel support for evaluating julia code.
-;;
-;; See https://github.com/gjkerns/ob-julia/blob/master/ob-julia-doc.org
-;; for detailed instructions on how to get started.  The git repository
-;; contains more documentation: git://github.com/gjkerns/ob-julia.git
+;; Org-Babel support for evaluating julia code
 
 ;;; Code:
 (require 'ob)
-(require 'cl-lib)
+(eval-when-compile (require 'cl))
 
 (declare-function orgtbl-to-csv "org-table" (table params))
 (declare-function julia "ext:ess-julia" (&optional start-args))
@@ -38,6 +15,7 @@
 (declare-function ess-make-buffer-current "ext:ess-inf" ())
 (declare-function ess-eval-buffer "ext:ess-inf" (vis))
 (declare-function org-number-sequence "org-compat" (from &optional to inc))
+(declare-function org-remove-if-not "org" (predicate seq))
 
 (defconst org-babel-header-args:julia
   '((width		 . :any)
@@ -55,13 +33,12 @@
 (defcustom org-babel-julia-command inferior-julia-program-name
   "Name of command to use for executing julia code."
   :group 'org-babel
-  :version "24.4"
-  :package-version '(Org . "8.0")
+  :version "24.3"
   :type 'string)
 
 (defvar ess-local-process-name) ; dynamically scoped
 (defun org-babel-edit-prep:julia (info)
-  (let ((session (cdr (assq :session (nth 2 info)))))
+  (let ((session (cdr (assoc :session (nth 2 info)))))
     (when (and session (string-match "^\\*\\(.+?\\)\\*$" session))
       (save-match-data (org-babel-julia-initiate-session session nil)))))
 
@@ -73,8 +50,9 @@
      #'identity
      ((lambda (inside)
 	(if graphics-file
-            inside
-	  inside))
+            inside 
+	  inside)
+	)
       (append (org-babel-variable-assignments:julia params)
 	      (list body))) "\n")))
 
@@ -82,12 +60,12 @@
   "Execute a block of julia code.
 This function is called by `org-babel-execute-src-block'."
   (save-excursion
-    (let* ((result-params (cdr (assq :result-params params)))
-	   (result-type (cdr (assq :result-type params)))
+    (let* ((result-params (cdr (assoc :result-params params)))
+	   (result-type (cdr (assoc :result-type params)))
            (session (org-babel-julia-initiate-session
-		     (cdr (assq :session params)) params))
-	   (colnames-p (cdr (assq :colnames params)))
-	   (rownames-p (cdr (assq :rownames params)))
+		     (cdr (assoc :session params)) params))
+	   (colnames-p (cdr (assoc :colnames params)))
+	   (rownames-p (cdr (assoc :rownames params)))
 	   (graphics-file (org-babel-julia-graphical-output-file params))
 	   (full-body (org-babel-expand-body:julia body params graphics-file))
 	   (result
@@ -95,10 +73,10 @@ This function is called by `org-babel-execute-src-block'."
 	     session full-body result-type result-params
 	     (or (equal "yes" colnames-p)
 		 (org-babel-pick-name
-		  (cdr (assq :colname-names params)) colnames-p))
+		  (cdr (assoc :colname-names params)) colnames-p))
 	     (or (equal "yes" rownames-p)
 		 (org-babel-pick-name
-		  (cdr (assq :rowname-names params)) rownames-p)))))
+		  (cdr (assoc :rowname-names params)) rownames-p)))))
       (if graphics-file nil result))))
 
 (defun org-babel-prep-session:julia (session params)
@@ -124,20 +102,22 @@ This function is called by `org-babel-execute-src-block'."
 
 (defun org-babel-variable-assignments:julia (params)
   "Return list of julia statements assigning the block's variables."
-  (let ((vars (org-babel--get-vars params)))
+  (let ((vars (if (fboundp 'org-babel-get-header)
+                  (mapcar #'cdr (org-babel-get-header params :var))
+                (mapcar #'cdr (org-babel--get-vars params)))))
     (mapcar
      (lambda (pair)
        (org-babel-julia-assign-elisp
 	(car pair) (cdr pair)
-	(equal "yes" (cdr (assq :colnames params)))
-	(equal "yes" (cdr (assq :rownames params)))))
+	(equal "yes" (cdr (assoc :colnames params)))
+	(equal "yes" (cdr (assoc :rownames params)))))
      (mapcar
       (lambda (i)
 	(cons (car (nth i vars))
 	      (org-babel-reassemble-table
 	       (cdr (nth i vars))
-	       (cdr (nth i (cdr (assq :colname-names params))))
-	       (cdr (nth i (cdr (assq :rowname-names params)))))))
+	       (cdr (nth i (cdr (assoc :colname-names params))))
+	       (cdr (nth i (cdr (assoc :rowname-names params)))))))
       (org-number-sequence 0 (1- (length vars)))))))
 
 (defun org-babel-julia-quote-csv-field (s)
@@ -149,9 +129,9 @@ This function is called by `org-babel-execute-src-block'."
 (defun org-babel-julia-assign-elisp (name value colnames-p rownames-p)
   "Construct julia code assigning the elisp VALUE to a variable named NAME."
   (if (listp value)
-      (let ((max (apply #'max (mapcar #'length (cl-remove-if-not
+      (let ((max (apply #'max (mapcar #'length (org-remove-if-not
 						#'sequencep value))))
-	    (min (apply #'min (mapcar #'length (cl-remove-if-not
+	    (min (apply #'min (mapcar #'length (org-remove-if-not
 						#'sequencep value))))
 	    (transition-file (org-babel-temp-file "julia-import-")))
         ;; ensure VALUE has an orgtbl structure (depth of at least 2)
@@ -178,7 +158,7 @@ This function is called by `org-babel-execute-src-block'."
     (let ((session (or session "*julia*"))
 	  (ess-ask-for-ess-directory
 	   (and (and (boundp 'ess-ask-for-ess-directory) ess-ask-for-ess-directory)
-		(not (cdr (assq :dir params))))))
+		(not (cdr (assoc :dir params))))))
       (if (org-babel-comint-buffer-livep session)
 	  session
 	(save-window-excursion
@@ -228,7 +208,7 @@ current code buffer."
 If RESULT-TYPE equals 'output then return standard output as a
 string.  If RESULT-TYPE equals 'value then return the value of the
 last statement in BODY, as elisp."
-  (cl-case result-type
+  (case result-type
     (value
      (let ((tmp-file (org-babel-temp-file "julia-")))
        (org-babel-eval org-babel-julia-command
@@ -250,7 +230,7 @@ last statement in BODY, as elisp."
 If RESULT-TYPE equals 'output then return standard output as a
 string.  If RESULT-TYPE equals 'value then return the value of the
 last statement in BODY, as elisp."
-  (cl-case result-type
+  (case result-type
     (value
      (with-temp-buffer
        (insert (org-babel-chomp body))

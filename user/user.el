@@ -5,10 +5,13 @@
 (add-to-list 'package-selected-packages 'poetry)
 (add-to-list 'package-selected-packages 'flx)
 (add-to-list 'package-selected-packages 'counsel)	
+(add-to-list 'package-selected-packages 'company-mode)
 (add-to-list 'package-selected-packages 'company-backends)
 (add-to-list 'package-selected-packages 'julia-mode)
 (add-to-list 'package-selected-packages 'julia-repl)
+(add-to-list 'package-selected-packages 'eglot-jl)
 ;; (add-to-list 'package-selected-packages 'ob-julia)
+;; (add-to-list 'load-path "~/scimax/ob-julia.el")
 
 (add-to-list 'package-selected-packages 'elfeed)
 (add-to-list 'package-selected-packages 'elfeed-org)
@@ -18,6 +21,7 @@
 (add-to-list 'package-selected-packages 'ergoemacs-mode)
 (add-to-list 'package-selected-packages 'dashboard)
 (add-to-list 'package-selected-packages 'pdf-tools)
+(add-to-list 'package-selected-packages 'org-superstar)
 
 ;; Don't remove this:
 (unless (every 'package-installed-p package-selected-packages)
@@ -110,11 +114,20 @@
 (setq inferior-julia-program-name "julia")
 (setq ess-use-auto-complete t)
 (setq ess-tab-complete-in-script t)
+(add-hook 'julia-mode-hook 'julia-repl-mode) ;; always use minor mode
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:complete-on-dot t)                 ; optional
+(setq jedi:environment-root "jedi")  ; or any other name you like
+(setq py-python-command "/usr/bin/python3")
+(setq elpy-rpc-python-command "python3")
+(setq jedi:environment-virtualenv
+      (append python-environment-virtualenv
+              '("--python" "/usr/bin/python3")))
+
+(add-hook 'after-init-hook 'global-company-mode)
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -127,10 +140,10 @@
    ))
 
 (setq org-latex-pdf-process
-      '("pdflatex -interaction nonstopmode -output-directory %o %f"
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "biber %b"
-        "pdflatex -interaction nonstopmode -output-directory %o %f"
-        "pdflatex -interaction nonstopmode -output-directory %o %f"))
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 (setq org-latex-prefer-user-labels t)
 
@@ -165,14 +178,8 @@
 
 
 
-(use-package which-key
- 	:ensure t
-;; 	:config 
-;; 	(progn
-;;	  (wich-key-setup-side-window-right-bottom)
-;; 	  (which-key-mode)
-;;	)
-)
+(require 'which-key)
+(which-key-mode)
 
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
@@ -186,6 +193,8 @@
 (setq ivy-initial-inputs-alist nil)
 
 (global-linum-mode t)
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+(setq org-list-allow-alphabetical t)
 
 (use-package flyspell
   :defer t
@@ -229,3 +238,29 @@
   :config
   (add-to-list 'dashboard-item-generators '(packages . dashboard-load-packages))
   (dashboard-setup-startup-hook))
+
+(setq org-default-notes-file (concat  "~/Dropbox/Emacs/notes.org"))
+     (define-key global-map "\C-cc" 'org-capture)
+
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/Dropbox/Emacs/notes.org" "Tasks")
+             "* TODO %?\n  %i\n  %a")
+	("s" "Scheduled TODO" entry (file+headline as/gtd "Collect")
+	     "* TODO %? %^G \nSCHEDULED: %^t\n  %U" :empty-lines 1)
+        ("d" "Deadline" entry (file+headline as/gtd "Collect")
+            "* TODO %? %^G \n  DEADLINE: %^t" :empty-lines 1)
+        ("p" "Priority" entry (file+headline as/gtd "Collect")
+        "* TODO [#A] %? %^G \n  SCHEDULED: %^t")
+        ("a" "Appointment" entry (file+headline as/gtd "Collect")
+        "* %? %^G \n  %^t")
+	("P" "Research project" entry (file "~/Dropbox/Emacs/inbox.org")
+	 "* TODO %^{Project title} :%^G:\n:PROPERTIES:\n:CREATED: %U\n:END:\n%^{Project description}\n** TODO Literature review\n** TODO %?\n** TODO Summary\n** TODO Reports\n** Ideas\n" :clock-in t :clock-resume t)
+	("e" "Email" entry (file "~/Dropbox/Emacs/inbox.org")
+	 "* TODO %? email |- %:from: %:subject :EMAIL:\n:PROPERTIES:\n:CREATED: %U\n:EMAIL-SOURCE: %l\n:END:\n%U\n" :clock-in t :clock-resume t)
+	("b" "Link from browser" entry (file "~/Dropbox/Emacs/links.org")
+	 "* TODO %? |- (%:description) :BOOKMARK:\n:PROPERTIES:\n:CREATED: %U\n:Source: %:link\n:END:\n%i\n" :clock-in t :clock-resume t)
+	("r" "Work reading" entry (file "~/Dropbox/Emacs/inbox.org")
+	 "* TODO %? |- (%:description) :BOOKMARK:\n:PROPERTIES:\n:CREATED: %U\n:Source: %:link\n:END:\n%i\n" :clock-in t :clock-resume t)
+	("g" "Generic idea" entry (file "~/Dropbox/Emacs/idea.org")
+	     "* TODO %?\n  %i\n  %a")
+))

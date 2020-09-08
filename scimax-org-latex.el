@@ -37,7 +37,7 @@
 	("T1" "fontenc" t)
 
 	;; This makes standard margins
-	("top=2cm, bottom=2cm, left=2cm, right=2cm" "geometry" nil)
+	("top=3cm, bottom=2cm, left=3cm, right=2cm" "geometry" nil)
 	("" "graphicx" t)
 	("" "longtable" nil)
 	("" "float" nil)
@@ -61,7 +61,8 @@ natbib=true,backend=biber" "biblatex" t)
 
 	
 	("" "url" nil)
-	
+	;; this is used for syntax highlighting of code
+	("cache=false" "minted" nil)
 	;; this allows you to use underscores in places like filenames. I still
 	;; wouldn't do it.
 	;; ("strings" "underscore" nil)
@@ -127,6 +128,33 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
+
+(add-to-list 'org-latex-classes
+	     '("article-1"                          ;class-name
+	       "\\documentclass{article}
+\\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+ [PACKAGES]
+ [EXTRA]" ;;header-string
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*a{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+;; This is for when you don't want any default packages, and you want
+;; to declare them all yourself.
+(add-to-list 'org-latex-classes
+	     '("tese"			;class-name
+	       "\\documentclass{abnt/abntex2}
+ [NO-DEFAULT-PACKAGES]
+ [PACKAGES]
+ [EXTRA]" ;;header-string
+	       ("\\chapter{%s}" . "\\chapter*{%s}")
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
 
 
