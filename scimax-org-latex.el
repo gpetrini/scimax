@@ -145,7 +145,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 ;; to declare them all yourself.
 (add-to-list 'org-latex-classes
 	     '("tese"			;class-name
-	       "\\documentclass{abnt/abntex2}
+	       "\\documentclass{gpsabntex}
  [NO-DEFAULT-PACKAGES]
  [PACKAGES]
  [EXTRA]" ;;header-string
@@ -156,6 +156,17 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
+(add-to-list 'org-latex-classes
+	     '("elsarticle" ;; https://write.as/dani/writing-a-phd-thesis-with-org-mode
+	       "\\documentclass{elsarticle}
+ [NO-DEFAULT-PACKAGES]
+ [PACKAGES]
+ [EXTRA]"
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
 
 ;; * Fragment overlays
