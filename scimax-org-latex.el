@@ -157,8 +157,8 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
 (add-to-list 'org-latex-classes
-	     '("elsarticle" ;; https://write.as/dani/writing-a-phd-thesis-with-org-mode
-	       "\\documentclass{elsarticle}
+	     '("SelfArx" ;; https://www.latextemplates.com/template/stylish-article
+	       "\\documentclass{SelfArx}
  [NO-DEFAULT-PACKAGES]
  [PACKAGES]
  [EXTRA]"
