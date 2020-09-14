@@ -1,3 +1,7 @@
+(require 'package)
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+
+(add-to-list 'package-selected-packages 'org-plus-contrib)
 (add-to-list 'package-selected-packages 'ess)
 (add-to-list 'package-selected-packages 'conda)
 (add-to-list 'package-selected-packages 'pyvenv)
@@ -22,6 +26,8 @@
 (add-to-list 'package-selected-packages 'dashboard)
 (add-to-list 'package-selected-packages 'pdf-tools)
 (add-to-list 'package-selected-packages 'org-superstar)
+(add-to-list 'package-selected-packages 'org-gcal)
+(add-to-list 'package-selected-packages 'org-timeline)
 
 ;; Don't remove this:
 (unless (every 'package-installed-p package-selected-packages)
@@ -40,7 +46,7 @@
    (quote
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(font-use-system-font t)
- '(org-agenda-files (quote ("~/Dropbox/Emacs/Todos.org"))))
+ '(org-agenda-files (list "~/Dropbox/Emacs/Todos.org")))
 (custom-set-faces
  )
 
@@ -218,26 +224,7 @@
   (pdf-view-resize-factor 1.1)
   (pdf-view-use-unicode-ligther nil))
 
-(use-package dashboard
-  :if (< (length command-line-args) 2)
-  :preface
-  (defun dashboard-load-packages (list-size)
-    (insert (make-string (ceiling (max 0 (- dashboard-banner-length 38)) 5) ? )
-            (format "%d packages loaded in %s" (length package-activated-list) (emacs-init-time))))
-  :custom
-  (dashboard-banner-logo-title "With Great Power Comes Great Responsibility")
-  (dashboard-center-content t)
-  (dashboard-items '((packages)
-                     (agenda)
-                     (projects . 5)))
-  (dashboard-set-file-icons t)
-  (dashboard-set-heading-icons t)
-  (dashboard-set-init-info nil)
-  (dashboard-set-navigator t)
-  (dashboard-startup-banner 'logo)
-  :config
-  (add-to-list 'dashboard-item-generators '(packages . dashboard-load-packages))
-  (dashboard-setup-startup-hook))
+(require 'scimax-dashboard)
 
 (setq org-default-notes-file (concat  "~/Dropbox/Emacs/notes.org"))
      (define-key global-map "\C-cc" 'org-capture)
@@ -251,16 +238,41 @@
             "* TODO %? %^G \n  DEADLINE: %^t" :empty-lines 1)
         ("p" "Priority" entry (file+headline as/gtd "Collect")
         "* TODO [#A] %? %^G \n  SCHEDULED: %^t")
-        ("a" "Appointment" entry (file+headline as/gtd "Collect")
-        "* %? %^G \n  %^t")
-	("P" "Research project" entry (file "~/Dropbox/Emacs/inbox.org")
-	 "* TODO %^{Project title} :%^G:\n:PROPERTIES:\n:CREATED: %U\n:END:\n%^{Project description}\n** TODO Literature review\n** TODO %?\n** TODO Summary\n** TODO Reports\n** Ideas\n" :clock-in t :clock-resume t)
-	("e" "Email" entry (file "~/Dropbox/Emacs/inbox.org")
-	 "* TODO %? email |- %:from: %:subject :EMAIL:\n:PROPERTIES:\n:CREATED: %U\n:EMAIL-SOURCE: %l\n:END:\n%U\n" :clock-in t :clock-resume t)
-	("b" "Link from browser" entry (file "~/Dropbox/Emacs/links.org")
-	 "* TODO %? |- (%:description) :BOOKMARK:\n:PROPERTIES:\n:CREATED: %U\n:Source: %:link\n:END:\n%i\n" :clock-in t :clock-resume t)
-	("r" "Work reading" entry (file "~/Dropbox/Emacs/inbox.org")
-	 "* TODO %? |- (%:description) :BOOKMARK:\n:PROPERTIES:\n:CREATED: %U\n:Source: %:link\n:END:\n%i\n" :clock-in t :clock-resume t)
+        ("P" "Pessoal" entry (file  "~/Dropbox/Emacs/Gmail.org" )
+"* %?\n\n%^T\n\n:PROPERTIES:\n\n:END:\n\n")
+        ("U" "Unicamp" entry (file  "~/Dropbox/Emacs/Unicamp.org" )
+"* %?\n\n%^T\n\n:PROPERTIES:\n\n:END:\n\n")
 	("g" "Generic idea" entry (file "~/Dropbox/Emacs/idea.org")
 	     "* TODO %?\n  %i\n  %a")
+	("c" "calfw2org" entry (file nil)
+	    "* %?\n %(cfw:org-capture-day)")
+
 ))
+
+(use-package calfw
+:ensure ;TODO:
+:config
+(require 'calfw)
+(require 'calfw-org)
+(setq cfw:org-overwrite-default-keybinding t)
+(require 'calfw-ical)
+
+(defun mycalendar ()
+(interactive)
+(cfw:open-calendar-buffer
+:contents-sources
+(list
+    (cfw:org-create-source "IndianRed")  ; orgmode source
+(cfw:ical-create-source "Unicamp" "https://calendar.google.com/calendar/ical/g155468@dac.unicamp.br/private-cb1bfc11310f03608d8a284b97d627a4/basic.ics" "Green")
+(cfw:ical-create-source "Pessoal" "https://calendar.google.com/calendar/ical/gpetrinidasilveira@gmail.com/private-232b3fff9ab59f9953d4cebf83d7f189/basic.ics" "Orange")
+(cfw:ical-create-source "Karina" "https://calendar.google.com/calendar/ical/karina.lopesbernardi@gmail.com/private-581ba6c17a09db84bdd66bf83b70174c/basic.ics" "RosyBrown")
+(cfw:ical-create-source "Sraffianismo Tardio" "https://calendar.google.com/calendar/ical/unicamp.br_classroomfeeb9365@group.calendar.google.com/private-43ab6439b8f4f8746ca64191c82e0854/basic.ics" "Purple")
+(cfw:ical-create-source "Cecon" "https://calendar.google.com/calendar/ical/unicamp.br_9lp6qlphk264nikd6oe2crk1es@group.calendar.google.com/private-1fffc0f45f6426b505ce490a37a138ee/basic.ics" "Red")
+(cfw:ical-create-source "PED" "https://calendar.google.com/calendar/ical/unicamp.br_it3j901am0drhg87mg5h3u1dn0@group.calendar.google.com/private-543a0c1dba5acf1500da73ccec1e4fa6/basic.ics" "Brown")
+)))
+(setq cfw:org-overwrite-default-keybinding t))
+
+(use-package calfw-gcal
+:ensure t
+:config
+(require 'calfw-gcal))

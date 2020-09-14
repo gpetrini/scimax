@@ -52,7 +52,7 @@
 			  (scimax-recentf  . 5)
 			  (scimax-bookmarks . 5)
 			  (scimax-projects . 5)))
-  (dashboard-setup-startup-hook))
+  )
 
 
 (defun scimax-dashboard-describe-keys ()
@@ -106,35 +106,6 @@
 
 (defun scimax-dashboard-scimax-section (&rest args)
   "Create the scimax dashboard section."
-  (dashboard-insert-heading "scimax")
-  (insert "\n    ")
-  (widget-create 'push-button
-		 :action `(lambda (&rest ignore)
-			    (scimax-help))
-		 :mouse-face 'highlight
-		 :help-echo (substitute-command-keys
-			     (format "\\[%s]\n"
-				     "scimax-help"))
-		 :follow-link "\C-m"
-		 :button-prefix ""
-		 :button-suffix ""
-		 :format "%[%t%]"
-		 "scimax help")
-
-  (insert "    ")
-  (widget-create 'push-button
-		 :action `(lambda (&rest ignore)
-			    (scimax/body))
-		 :mouse-face 'highlight
-		 :help-echo (substitute-command-keys
-			     (format "\\[%s]\n"
-				     "scimax/body"))
-		 :follow-link "\C-m"
-		 :button-prefix ""
-		 :button-suffix ""
-		 :format "%[%t%]"
-		 "scimax menu")
-
   (insert "    ")
   (widget-create
    'push-button
@@ -207,7 +178,6 @@
 		 :action `(lambda (&rest ignore)
 			    (org-agenda nil "a"))
 		 :mouse-face 'highlight
-		 :button-face '(:background "Lightgray" :underline t)
 		 :help-echo "Agenda"
 		 :follow-link "\C-m"
 		 :button-prefix ""
@@ -219,7 +189,6 @@
 		 :action `(lambda (&rest ignore)
 			    (org-agenda nil "t"))
 		 :mouse-face 'highlight
-		 :button-face '(:background "Lightgray" :underline t)
 		 :help-echo "Agenda"
 		 :follow-link "\C-m"
 		 :button-prefix ""
@@ -232,7 +201,6 @@
 		 :action `(lambda (&rest ignore)
 			    (org-agenda nil "m"))
 		 :mouse-face 'highlight
-		 :button-face '(:background "Lightgray" :underline t)
 		 :help-echo "Search by tag/property"
 		 :follow-link "\C-m"
 		 :button-prefix ""
@@ -244,7 +212,6 @@
 		 :action `(lambda (&rest ignore)
 			    (org-agenda nil "s"))
 		 :mouse-face 'highlight
-		 :button-face '(:background "Lightgray" :underline t)
 		 :help-echo "Search for keywords"
 		 :follow-link "\C-m"
 		 :button-prefix ""
@@ -256,7 +223,6 @@
 		 :action `(lambda (&rest ignore)
 			    (org-agenda nil "/"))
 		 :mouse-face 'highlight
-		 :button-face '(:background "Lightgray" :underline t)
 		 :help-echo "moccur"
 		 :follow-link "\C-m"
 		 :button-prefix ""
@@ -275,7 +241,6 @@
 		 :action `(lambda (&rest ignore)
 			    (counsel-recentf))
 		 :mouse-face 'highlight
-		 :button-face '(:background "Lightgray" :underline t)
 		 :help-echo "counsel-recentf"
 		 :follow-link "\C-m"
 		 :button-prefix ""
@@ -294,7 +259,6 @@
 		 :action `(lambda (&rest ignore)
 			    (counsel-bookmark))
 		 :mouse-face 'highlight
-		 :button-face '(:background "Lightgray" :underline t)
 		 :help-echo "Open another bookmark."
 		 :follow-link "\C-m"
 		 :button-prefix ""
@@ -313,7 +277,6 @@
 		 :action `(lambda (&rest ignore)
 			    (projectile-switch-project))
 		 :mouse-face 'highlight
-		 :button-face '(:background "Lightgray" :underline t)
 		 :help-echo "Open another project."
 		 :follow-link "\C-m"
 		 :button-prefix ""
