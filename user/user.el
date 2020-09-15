@@ -17,6 +17,8 @@
 ;; (add-to-list 'package-selected-packages 'ob-julia)
 ;; (add-to-list 'load-path "~/scimax/ob-julia.el")
 
+(add-to-list 'package-selected-packages 'ox-reveal)
+
 (add-to-list 'package-selected-packages 'elfeed)
 (add-to-list 'package-selected-packages 'elfeed-org)
 (add-to-list 'package-selected-packages 'org-journal)
@@ -114,6 +116,15 @@
               ("N" . gps/elfeed-show-economics)
               ("R" . gps/elfeed-mark-all-as-read)
               ("q" . gps/elfeed-save-db-and-bury)))
+
+(use-package ox-reveal
+:ensure ox-reveal)
+
+(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+(setq org-reveal-mathjax t)
+
+(use-package htmlize
+:ensure t)
 
 ;; (load-file "~/scimax/ob-julia.el")
 (require 'ess-site)
