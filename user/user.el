@@ -18,6 +18,7 @@
 ;; (add-to-list 'load-path "~/scimax/ob-julia.el")
 
 (add-to-list 'package-selected-packages 'ox-reveal)
+(add-to-list 'package-selected-packages 'citeproc-org)
 
 (add-to-list 'package-selected-packages 'elfeed)
 (add-to-list 'package-selected-packages 'elfeed-org)
@@ -163,6 +164,8 @@
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 (setq org-latex-prefer-user-labels t)
+
+(citeproc-org-setup)
 
 (use-package company
   :defer 0.5

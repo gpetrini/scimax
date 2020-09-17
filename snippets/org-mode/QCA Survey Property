@@ -1,15 +1,14 @@
 # -*- mode: snippet -*-
 # name: QCA Survey Property
-# key: qcap
+# key: _qca_
 # --
 
    :PROPERTIES:
-   :ZOTERO:   
    :YEAR:     
+   :ZOTERO:   
    :TYPE:     
    :STATUS:   
    :RELEVANCE: 
    :IMPACT:   
-   :DECISION: 
    :CITE:     
    :END:    
