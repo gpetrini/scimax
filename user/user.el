@@ -11,6 +11,7 @@
 (add-to-list 'package-selected-packages 'counsel)	
 (add-to-list 'package-selected-packages 'company-mode)
 (add-to-list 'package-selected-packages 'company-backends)
+(add-to-list 'package-selected-packages 'company-statistics)
 (add-to-list 'package-selected-packages 'julia-mode)
 (add-to-list 'package-selected-packages 'julia-repl)
 (add-to-list 'package-selected-packages 'eglot-jl)
@@ -28,6 +29,7 @@
 (add-to-list 'package-selected-packages 'ergoemacs-mode)
 (add-to-list 'package-selected-packages 'dashboard)
 (add-to-list 'package-selected-packages 'pdf-tools)
+(add-to-list 'package-selected-packages 'neotree)
 (add-to-list 'package-selected-packages 'org-superstar)
 (add-to-list 'package-selected-packages 'org-gcal)
 (add-to-list 'package-selected-packages 'org-timeline)
@@ -187,6 +189,9 @@
   :after (anaconda-mode company)
   :config (add-to-list 'company-backends 'company-anaconda))
 
+(require 'company-statistics)
+(company-statistics-mode)
+
 (cua-mode t)
 (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
 (transient-mark-mode 1)               ;; No region when it is not highlighted
@@ -196,10 +201,15 @@
 ;; (setq ergoemacs-keyboard-layout "us") ;; Assumes QWERTY keyboard layout
 ;; (ergoemacs-mode 1)
 
-
+(require 'neotree)
+(global-set-key [f8] 'neotree-toggle)
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
 (require 'which-key)
-(which-key-mode)
+(use-package which-key
+  :defer 0.2
+  :diminish
+  :config (which-key-mode))
 
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
@@ -239,6 +249,7 @@
   (pdf-view-use-unicode-ligther nil))
 
 (require 'scimax-dashboard)
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 
 (setq org-default-notes-file (concat  "~/Dropbox/Emacs/notes.org"))
      (define-key global-map "\C-cc" 'org-capture)

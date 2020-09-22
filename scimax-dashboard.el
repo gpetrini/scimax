@@ -50,8 +50,8 @@
   (setq dashboard-items '((scimax . t)
 			  (scimax-agenda . 5)
 			  (scimax-recentf  . 5)
-			  (scimax-bookmarks . 5)
 			  (scimax-projects . 5)))
+  (dashboard-setup-startup-hook)
   )
 
 
@@ -249,24 +249,6 @@
 		 "Open another recent file"))
 
 (add-to-list 'dashboard-item-generators  '(scimax-recentf . scimax-dashboard-recentf))
-
-;; * bookmarks
-(defun scimax-dashboard-bookmarks (&rest args)
-  "Create our version of bookmarks"
-  (dashboard-insert-bookmarks (cdr (assoc 'scimax-bookmarks dashboard-items)))
-  (insert "\n    ")
-  (widget-create 'push-button
-		 :action `(lambda (&rest ignore)
-			    (counsel-bookmark))
-		 :mouse-face 'highlight
-		 :help-echo "Open another bookmark."
-		 :follow-link "\C-m"
-		 :button-prefix ""
-		 :button-suffix ""
-		 :format "%[%t%]"
-		 "Open another bookmark."))
-
-(add-to-list 'dashboard-item-generators  '(scimax-bookmarks . scimax-dashboard-bookmarks))
 
 ;; * projects
 (defun scimax-dashboard-projects (&rest args)
@@ -287,6 +269,8 @@
 (add-to-list 'dashboard-item-generators  '(scimax-projects . scimax-dashboard-projects))
 
 
+
+;; (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 (provide 'scimax-dashboard)
 
 ;;; scimax-dashboard.el ends here

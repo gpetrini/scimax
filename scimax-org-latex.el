@@ -169,6 +169,17 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
 
+(add-to-list 'org-latex-classes
+             '("beamer"
+               "\\documentclass[presentation]{beamer}
+ [NO-DEFAULT-PACKAGES]
+ [PACKAGES]
+ [EXTRA]"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
+
 ;; * Fragment overlays
 
 (defun scimax-org-latex-fragment-tooltip (beg end image imagetype)

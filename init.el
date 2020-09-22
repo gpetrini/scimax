@@ -115,7 +115,6 @@
 
 (setq gc-cons-threshold 800000)
 
-
 (provide 'init)
 
 ;;; init.el ends here
