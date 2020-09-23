@@ -129,12 +129,8 @@
 (use-package htmlize
 :ensure t)
 
-;; (load-file "~/scimax/ob-julia.el")
+(load-file "~/scimax/ob-julia.el")
 (require 'ess-site)
-(setq inferior-julia-program-name "julia")
-(setq ess-use-auto-complete t)
-(setq ess-tab-complete-in-script t)
-(add-hook 'julia-mode-hook 'julia-repl-mode) ;; always use minor mode
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
