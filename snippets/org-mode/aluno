@@ -1,0 +1,10 @@
+# key: _aluno_
+# name: aluno
+# --
+
+#+OPTIONS: toc:nil num:nil
+#+TITLE: ${1:RA} - ${2:Nome}
+#+AUTHOR: Gabriel Petrini (PED)
+#+PROPERTY: RA $1
+#+PROPERTY: NOME \"$2\"
+#+INCLUDE_TAGS: private

@@ -45,8 +45,8 @@
 ;; * Other packages
 (use-package diminish)
 
-(use-package aggressive-indent
-  :config (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
+;; (use-package aggressive-indent
+;;  :config (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
 
 (use-package auto-complete
   :diminish auto-complete-mode

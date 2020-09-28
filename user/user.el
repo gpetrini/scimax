@@ -129,7 +129,7 @@
 (use-package htmlize
 :ensure t)
 
-(load-file "~/scimax/ob-julia.el")
+;;(load-file "~/scimax/ob-julia.el")
 (require 'ess-site)
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
@@ -244,8 +244,8 @@
   (pdf-view-resize-factor 1.1)
   (pdf-view-use-unicode-ligther nil))
 
-(require 'scimax-dashboard)
-(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+;;(require 'scimax-dashboard)
+;;(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 
 (setq org-default-notes-file (concat  "~/Dropbox/Emacs/notes.org"))
      (define-key global-map "\C-cc" 'org-capture)
