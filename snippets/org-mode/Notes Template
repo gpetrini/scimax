@@ -3,11 +3,14 @@
 # key: _notes_
 # group: notes lectures
 # --
-#+TITLE: ${title}
+#+TITLE: ${1:Title}
 #+AUTHOR: Gabriel Petrini
-#+DATE: ${date}
-#+LATEX_HEADER: \\usepackage[american]{babel}
-#+LATEX_HEADER: \\usepackage{minted}
+#+DATE: ${2:Date}
+#+LANG: ${3:en}
+
+* LaTeX headers                                         :noexport:ignore:
+
+* HTML headers                                         :noexport:ignore:
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
 
