@@ -1,8 +1,8 @@
 # -*- mode: snippet -*-
-# name: QCA Survey Property
-# key: _qca_
+# name: Survey Property
+# key:  lvto
 # --
-
+** [[${1:Link}][${2:Authors} - ${3:Title}]
    :PROPERTIES:
    :YEAR:     
    :ZOTERO:   
@@ -11,4 +11,8 @@
    :RELEVANCE: 
    :IMPACT:   
    :CITE:     
-   :END:    
+   :END:
+
+#+BEGIN_SRC bibtex
+
+#+END_SRC

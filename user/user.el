@@ -17,6 +17,7 @@
 (add-to-list 'package-selected-packages 'eglot-jl)
 ;; (add-to-list 'package-selected-packages 'ob-julia)
 ;; (add-to-list 'load-path "~/scimax/ob-julia.el")
+(add-to-list 'load-path "~/scimax/dynare.el")
 
 (add-to-list 'package-selected-packages 'ox-reveal)
 (add-to-list 'package-selected-packages 'citeproc-org)
