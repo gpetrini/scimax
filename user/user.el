@@ -143,6 +143,9 @@
 (setq jedi:environment-virtualenv
       (append python-environment-virtualenv
               '("--python" "/usr/bin/python3")))
+(elpy-enable)
+(custom-set-variables
+ '(python-shell-interpreter "/usr/bin/python3"))
 
 (add-hook 'after-init-hook 'global-company-mode)
 
