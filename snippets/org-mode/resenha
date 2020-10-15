@@ -7,7 +7,6 @@
 
 * Resenha ${1: Numero}: ${4: Tema} :private:
 :PROPERTIES:
-:NRESENHA: $1
 :TAREFA:
 :OBJETIVO:
 :ARGUMENTO:
@@ -15,6 +14,7 @@
 :DESENVOLVIMENTO:
 :CONCLUSAO:
 :CLAREZA:
+:NOTA:
 :END:
 
 ** Comentários individuais 
