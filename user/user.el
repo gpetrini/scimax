@@ -17,7 +17,6 @@
 (add-to-list 'package-selected-packages 'eglot-jl)
 ;; (add-to-list 'package-selected-packages 'ob-julia)
 ;; (add-to-list 'load-path "~/scimax/ob-julia.el")
-(add-to-list 'load-path "~/scimax/dynare.el")
 
 (add-to-list 'package-selected-packages 'ox-reveal)
 (add-to-list 'package-selected-packages 'citeproc-org)
@@ -148,6 +147,8 @@
  '(python-shell-interpreter "/usr/bin/python3"))
 
 (add-hook 'after-init-hook 'global-company-mode)
+
+(load "~/scimax/dynare.el")
 
 (org-babel-do-load-languages
  'org-babel-load-languages
