@@ -129,8 +129,23 @@
 (use-package htmlize
 :ensure t)
 
-;;(load-file "~/scimax/ob-julia.el")
-(require 'ess-site)
+;; Load ob-julia and dependencies
+(use-package julia-mode
+  :ensure t)
+(add-to-list 'load-path "~/ob-ess-julia/") ; replace by your own path
+(require 'ob-ess-julia)
+;; Link this language to ess-julia-mode (although it should be done by default):
+(setq org-src-lang-modes
+      (append org-src-lang-modes '(("ess-julia" . ess-julia))))
+
+(add-to-list 'org-structure-template-alist
+	     '("j" . "src ess-julia :results output :session *julia* :exports both"))
+;; Shortcut for inline graphical output within a session:
+(add-to-list 'org-structure-template-alist
+	     '("jfig" . "src ess-julia :results output graphics file :file FILENAME.png :session *julia* :exports both"))
+;; Shortcut for well-formatted org table output within a session:
+(add-to-list 'org-structure-template-alist
+	     '("jtab" . "src ess-julia :results value table :session *julia* :exports both :colnames yes"))
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
@@ -146,9 +161,22 @@
 (custom-set-variables
  '(python-shell-interpreter "/usr/bin/python3"))
 
-(add-hook 'after-init-hook 'global-company-mode)
-
 (load "~/scimax/dynare.el")
+
+(use-package poly-org
+  :ensure t)
+;; Add company:
+(use-package company
+  :ensure t)
+;; Tweaks for company:
+(add-hook 'after-init-hook 'global-company-mode)
+(setq company-global-modes '(not org-mode text-mode))
+(setq ess-use-company 'script-only)
+;; Add company quickhelp:
+(use-package company-quickhelp
+  :ensure t
+  :config
+  (company-quickhelp-mode))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -158,6 +186,7 @@
    (jupyter . t)
    (octave . t)
    (julia . t)
+   (ess-julia . t)
    ))
 
 (setq org-latex-pdf-process
