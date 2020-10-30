@@ -149,17 +149,22 @@
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)                 ; optional
-(setq jedi:environment-root "jedi")  ; or any other name you like
+(use-package auto-complete
+:ensure t
+:init
+(progn
+(ac-config-default)
+(global-auto-complete-mode t)
+))
+
 (setq py-python-command "/usr/bin/python3")
-(setq elpy-rpc-python-command "python3")
-(setq jedi:environment-virtualenv
-      (append python-environment-virtualenv
-              '("--python" "/usr/bin/python3")))
-(elpy-enable)
-(custom-set-variables
- '(python-shell-interpreter "/usr/bin/python3"))
+(setq python-shell-interpreter "python3")
+
+(use-package jedi
+:ensure t
+:init
+(add-hook 'python-mode-hook 'jedi:setup)
+(add-hook 'python-mode-hook 'jedi:ac-setup))
 
 (load "~/scimax/dynare.el")
 
