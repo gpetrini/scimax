@@ -15,6 +15,7 @@
 (add-to-list 'package-selected-packages 'julia-mode)
 (add-to-list 'package-selected-packages 'julia-repl)
 (add-to-list 'package-selected-packages 'eglot-jl)
+(add-to-list 'package-selected-packages 'exec-path-from-shell)
 ;; (add-to-list 'package-selected-packages 'ob-julia)
 ;; (add-to-list 'load-path "~/scimax/ob-julia.el")
 
@@ -129,6 +130,37 @@
 (use-package htmlize
 :ensure t)
 
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
+(use-package poly-org
+  :ensure t)
+;; Add company:
+(use-package company
+  :ensure t)
+;; Tweaks for company:
+(add-hook 'after-init-hook 'global-company-mode)
+(setq company-global-modes '(not org-mode text-mode))
+(setq ess-use-company 'script-only)
+;; Add company quickhelp:
+(use-package company-quickhelp
+  :ensure t
+  :config
+  (company-quickhelp-mode))
+
+(use-package company
+  :ensure t
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 3))
+
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") #'company-select-next)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous)
+  (define-key company-active-map (kbd "SPC") #'company-abort))
+
 ;; Load ob-julia and dependencies
 (use-package julia-mode
   :ensure t)
@@ -147,6 +179,9 @@
 (add-to-list 'org-structure-template-alist
 	     '("jtab" . "src ess-julia :results value table :session *julia* :exports both :colnames yes"))
 
+(setq python-shell-interpreter "python3")
+(setq elpy-rpc-python-command "python3")
+
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
 (use-package auto-complete
@@ -158,7 +193,7 @@
 ))
 
 (setq py-python-command "/usr/bin/python3")
-(setq python-shell-interpreter "python3")
+(setq python-shell-interpreter "python")
 
 (use-package jedi
 :ensure t
@@ -166,22 +201,24 @@
 (add-hook 'python-mode-hook 'jedi:setup)
 (add-hook 'python-mode-hook 'jedi:ac-setup))
 
-(load "~/scimax/dynare.el")
+(add-hook 'python-mode-hook 'yas-minor-mode)
+(add-hook 'python-mode-hook 'flycheck-mode)
 
-(use-package poly-org
-  :ensure t)
-;; Add company:
-(use-package company
-  :ensure t)
-;; Tweaks for company:
-(add-hook 'after-init-hook 'global-company-mode)
-(setq company-global-modes '(not org-mode text-mode))
-(setq ess-use-company 'script-only)
-;; Add company quickhelp:
-(use-package company-quickhelp
+(with-eval-after-load 'company
+    (add-hook 'python-mode-hook 'company-mode))
+
+(use-package company-jedi
   :ensure t
   :config
-  (company-quickhelp-mode))
+    (require 'company)
+    (add-to-list 'company-backends 'company-jedi))
+
+(defun python-mode-company-init ()
+  (setq-local company-backends '((company-jedi
+                                  company-etags
+                                  company-dabbrev-code))))
+
+(load "~/scimax/dynare.el")
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -203,29 +240,6 @@
 (setq org-latex-prefer-user-labels t)
 
 (citeproc-org-setup)
-
-(use-package company
-  :defer 0.5
-  :delight
-  :custom
-  (company-begin-commands '(self-insert-command))
-  (company-idle-delay 0)
-  (company-minimum-prefix-length 2)
-  (company-show-numbers t)
-  (company-tooltip-align-annotations 't)
-  (global-company-mode t))
-
-(use-package company-box
-  :after company
-  :diminish
-  :hook (company-mode . company-box-mode))
-
-(use-package company-anaconda
-  :after (anaconda-mode company)
-  :config (add-to-list 'company-backends 'company-anaconda))
-
-(require 'company-statistics)
-(company-statistics-mode)
 
 (cua-mode t)
 (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
@@ -257,9 +271,29 @@
         (t . ivy--regex-fuzzy)))
 (setq ivy-initial-inputs-alist nil)
 
+(use-package mark-multiple
+  :ensure t
+  :bind ("C-c q" . 'mark-next-like-this))
+
 (global-linum-mode t)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 (setq org-list-allow-alphabetical t)
+
+(use-package spaceline
+  :ensure t
+  :config
+  (require 'spaceline-config)
+    (setq spaceline-buffer-encoding-abbrev-p nil)
+    (setq spaceline-line-column-p nil)
+    (setq spaceline-line-p nil)
+    (setq powerline-default-separator (quote arrow))
+    (spaceline-spacemacs-theme))
+
+(when window-system
+      (use-package pretty-mode
+      :ensure t
+      :config
+      (global-pretty-mode t)))
 
 (use-package flyspell
   :defer t
@@ -336,3 +370,28 @@
 :ensure t
 :config
 (require 'calfw-gcal))
+
+(use-package magit
+  :ensure t
+  :config
+  (setq magit-push-always-verify nil)
+  (setq git-commit-summary-max-length 50)
+  :bind
+  ("M-g" . magit-status))
+
+(defun config-reload ()
+  "Reloads ~/.emacs.d/config.org at runtime"
+  (interactive)
+  (org-babel-load-file (expand-file-name "~/scimax/user/README.org")))
+(global-set-key (kbd "C-c r") 'config-reload)
+
+(setq electric-pair-pairs '(
+                           (?\{ . ?\})
+                           (?\( . ?\))
+                           (?\[ . ?\])
+                           (?\" . ?\")
+                           ))
+(electric-pair-mode t)
+
+(add-to-list 'org-structure-template-alist
+	       '("el" "#+BEGIN_SRC elisp\n?\n#+END_SRC"))
