@@ -21,6 +21,7 @@
 
 (add-to-list 'package-selected-packages 'ox-reveal)
 (add-to-list 'package-selected-packages 'citeproc-org)
+(add-to-list 'package-selected-packages 'academic-phrases)
 
 (add-to-list 'package-selected-packages 'elfeed)
 (add-to-list 'package-selected-packages 'elfeed-org)
@@ -30,10 +31,7 @@
 (add-to-list 'package-selected-packages 'ergoemacs-mode)
 (add-to-list 'package-selected-packages 'dashboard)
 (add-to-list 'package-selected-packages 'pdf-tools)
-(add-to-list 'package-selected-packages 'neotree)
 (add-to-list 'package-selected-packages 'org-superstar)
-(add-to-list 'package-selected-packages 'org-gcal)
-(add-to-list 'package-selected-packages 'org-timeline)
 
 ;; Don't remove this:
 (unless (every 'package-installed-p package-selected-packages)
@@ -55,6 +53,16 @@
  '(org-agenda-files (list "~/Dropbox/Emacs/Todos.org")))
 (custom-set-faces
  )
+
+(setq org-ellipsis " ")
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+(setq org-export-with-smart-quotes t)
+
+(use-package org-bullets
+  :ensure t
+  :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 
 (use-package elfeed-org
   :ensure t
@@ -130,9 +138,6 @@
 (use-package htmlize
 :ensure t)
 
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-
 (use-package poly-org
   :ensure t)
 ;; Add company:
@@ -161,6 +166,12 @@
   (define-key company-active-map (kbd "C-p") #'company-select-previous)
   (define-key company-active-map (kbd "SPC") #'company-abort))
 
+(add-to-list 'load-path "~/scimax/user/ado-mode/lisp")
+(require 'ado-mode)
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
 ;; Load ob-julia and dependencies
 (use-package julia-mode
   :ensure t)
@@ -179,7 +190,8 @@
 (add-to-list 'org-structure-template-alist
 	     '("jtab" . "src ess-julia :results value table :session *julia* :exports both :colnames yes"))
 
-(setq python-shell-interpreter "python3")
+(with-eval-after-load 'python
+  (add-hook 'python-mode-hook (lambda () (setq python-shell-interpreter "python3"))))
 (setq elpy-rpc-python-command "python3")
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
@@ -220,6 +232,69 @@
 
 (load "~/scimax/dynare.el")
 
+(add-hook 'shell-mode-hook 'yas-minor-mode)
+(add-hook 'shell-mode-hook 'flycheck-mode)
+(add-hook 'shell-mode-hook 'company-mode)
+
+(defun shell-mode-company-init ()
+  (setq-local company-backends '((company-shell
+                                  company-shell-env
+                                  company-etags
+                                  company-dabbrev-code))))
+
+(use-package company-shell
+  :ensure t
+  :config
+    (require 'company)
+    (add-hook 'shell-mode-hook 'shell-mode-company-init))
+
+(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
+(add-hook 'emacs-lisp-mode-hook 'company-mode)
+
+(use-package slime
+  :ensure t
+  :config
+  (setq inferior-lisp-program "/usr/bin/sbcl")
+  (setq slime-contribs '(slime-fancy)))
+
+(use-package slime-company
+  :ensure t
+  :init
+    (require 'company)
+    (slime-setup '(slime-fancy slime-company)))
+
+(add-hook 'c++-mode-hook 'yas-minor-mode)
+(add-hook 'c-mode-hook 'yas-minor-mode)
+
+(use-package flycheck-clang-analyzer
+  :ensure t
+  :config
+  (with-eval-after-load 'flycheck
+    (require 'flycheck-clang-analyzer)
+     (flycheck-clang-analyzer-setup)))
+
+(with-eval-after-load 'company
+  (add-hook 'c++-mode-hook 'company-mode)
+  (add-hook 'c-mode-hook 'company-mode))
+
+(use-package company-c-headers
+  :ensure t)
+
+(use-package company-irony
+  :ensure t
+  :config
+  (setq company-backends '((company-c-headers
+                            company-dabbrev-code
+                            company-irony))))
+
+(use-package irony
+  :ensure t
+  :config
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(
@@ -228,8 +303,7 @@
    (jupyter . t)
    (octave . t)
    (julia . t)
-   (ess-julia . t)
-   ))
+   (ess-julia . t)))
 
 (setq org-latex-pdf-process
       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
@@ -240,6 +314,14 @@
 (setq org-latex-prefer-user-labels t)
 
 (citeproc-org-setup)
+
+  (use-package Iedit
+    :ensure t)
+
+(use-package avy
+  :ensure t
+  :bind
+    ("M-s" . avy-goto-char))
 
 (cua-mode t)
 (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
@@ -273,7 +355,7 @@
 
 (use-package mark-multiple
   :ensure t
-  :bind ("C-c q" . 'mark-next-like-this))
+  :bind ("C-." . 'mark-next-like-this))
 
 (global-linum-mode t)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
@@ -317,8 +399,17 @@
   (pdf-view-resize-factor 1.1)
   (pdf-view-use-unicode-ligther nil))
 
-;;(require 'scimax-dashboard)
-;;(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+;; (require 'scimax-dashboard)
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+
+(use-package dashboard
+  :ensure t
+  :config
+    (dashboard-setup-startup-hook)
+    (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
+    (setq dashboard-items '((recents  . 5)
+                            (projects . 5)))
+    (setq dashboard-banner-logo-title ""))
 
 (setq org-default-notes-file (concat  "~/Dropbox/Emacs/notes.org"))
      (define-key global-map "\C-cc" 'org-capture)
@@ -343,34 +434,6 @@
 
 ))
 
-(use-package calfw
-:ensure ;TODO:
-:config
-(require 'calfw)
-(require 'calfw-org)
-(setq cfw:org-overwrite-default-keybinding t)
-(require 'calfw-ical)
-
-(defun mycalendar ()
-(interactive)
-(cfw:open-calendar-buffer
-:contents-sources
-(list
-    (cfw:org-create-source "IndianRed")  ; orgmode source
-(cfw:ical-create-source "Unicamp" "https://calendar.google.com/calendar/ical/g155468@dac.unicamp.br/private-cb1bfc11310f03608d8a284b97d627a4/basic.ics" "Green")
-(cfw:ical-create-source "Pessoal" "https://calendar.google.com/calendar/ical/gpetrinidasilveira@gmail.com/private-232b3fff9ab59f9953d4cebf83d7f189/basic.ics" "Orange")
-(cfw:ical-create-source "Karina" "https://calendar.google.com/calendar/ical/karina.lopesbernardi@gmail.com/private-581ba6c17a09db84bdd66bf83b70174c/basic.ics" "RosyBrown")
-(cfw:ical-create-source "Sraffianismo Tardio" "https://calendar.google.com/calendar/ical/unicamp.br_classroomfeeb9365@group.calendar.google.com/private-43ab6439b8f4f8746ca64191c82e0854/basic.ics" "Purple")
-(cfw:ical-create-source "Cecon" "https://calendar.google.com/calendar/ical/unicamp.br_9lp6qlphk264nikd6oe2crk1es@group.calendar.google.com/private-1fffc0f45f6426b505ce490a37a138ee/basic.ics" "Red")
-(cfw:ical-create-source "PED" "https://calendar.google.com/calendar/ical/unicamp.br_it3j901am0drhg87mg5h3u1dn0@group.calendar.google.com/private-543a0c1dba5acf1500da73ccec1e4fa6/basic.ics" "Brown")
-)))
-(setq cfw:org-overwrite-default-keybinding t))
-
-(use-package calfw-gcal
-:ensure t
-:config
-(require 'calfw-gcal))
-
 (use-package magit
   :ensure t
   :config
@@ -378,6 +441,32 @@
   (setq git-commit-summary-max-length 50)
   :bind
   ("M-g" . magit-status))
+
+(use-package async
+  :ensure t
+  :init (dired-async-mode 1))
+
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode 1))
+
+(global-set-key (kbd "<f5>") 'projectile-compile-project)
+
+(use-package rainbow-mode
+  :ensure t
+  :init
+    (add-hook 'prog-mode-hook 'rainbow-mode))
+
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package hungry-delete
+  :ensure t
+  :config
+    (global-hungry-delete-mode))
 
 (defun config-reload ()
   "Reloads ~/.emacs.d/config.org at runtime"
@@ -395,3 +484,39 @@
 
 (add-to-list 'org-structure-template-alist
 	       '("el" "#+BEGIN_SRC elisp\n?\n#+END_SRC"))
+
+(use-package helm
+  :ensure t
+  :bind
+  ("C-x C-f" . 'helm-find-files)
+  ("C-x C-b" . 'helm-buffers-list)
+  ("M-x" . 'helm-M-x)
+  :config
+  (defun gps/helm-hide-minibuffer ()
+    (when (with-helm-buffer helm-echo-input-in-header-line)
+      (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
+        (overlay-put ov 'window (selected-window))
+        (overlay-put ov 'face
+                     (let ((bg-color (face-background 'default nil)))
+                       `(:background ,bg-color :foreground ,bg-color)))
+        (setq-local cursor-type nil))))
+  (add-hook 'helm-minibuffer-set-up-hook 'gps/helm-hide-minibuffer)
+  (setq helm-autoresize-max-height 0
+        helm-autoresize-min-height 40
+        helm-M-x-fuzzy-match t
+        helm-buffers-fuzzy-matching t
+        helm-recentf-fuzzy-match t
+        helm-semantic-fuzzy-match t
+        helm-imenu-fuzzy-match t
+        helm-split-window-in-side-p nil
+        helm-move-to-line-cycle-in-source nil
+        helm-ff-search-library-in-sexp t
+        helm-scroll-amount 8 
+        helm-echo-input-in-header-line t)
+  :init
+  (helm-mode 1))
+
+(require 'helm-config)    
+(helm-autoresize-mode 1)
+(define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
+(define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
