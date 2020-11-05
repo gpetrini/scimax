@@ -1,5 +1,9 @@
 (require 'package)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+
+(with-eval-after-load 'tls
+    (push "/usr/local/etc/libressl/cert.pem" gnutls-trustfiles))
 
 (add-to-list 'package-selected-packages 'org-plus-contrib)
 (add-to-list 'package-selected-packages 'ess)
@@ -169,6 +173,35 @@
 (add-to-list 'load-path "~/scimax/user/ado-mode/lisp")
 (require 'ado-mode)
 
+ (when (functionp 'module-load)
+     (use-package jupyter)
+     (with-eval-after-load 'org
+       (org-babel-do-load-languages
+	'org-babel-load-languages
+	'((jupyter . t))))
+     (with-eval-after-load 'jupyter
+       (define-key jupyter-repl-mode-map (kbd "C-l") #'jupyter-repl-clear-cells)
+       (define-key jupyter-repl-mode-map (kbd "TAB") #'company-complete-common-or-cycle)
+       (define-key jupyter-org-interaction-mode-map (kbd "TAB") #'company-complete-common-or-cycle)
+       (define-key jupyter-repl-interaction-mode-map (kbd "C-c C-r") #'jupyter-eval-line-or-region)
+       (define-key jupyter-repl-interaction-mode-map (kbd "C-c M-r") #'jupyter-repl-restart-kernel)
+       (define-key jupyter-repl-interaction-mode-map (kbd "C-c M-k") #'jupyter-shutdown-kernel)
+       (add-hook 'jupyter-org-interaction-mode-hook (lambda () (company-mode)
+						     (setq company-backends '(company-capf))))
+       (add-hook 'jupyter-repl-mode-hook (lambda () (company-mode)
+					  :config (set-face-attribute
+						   'jupyter-repl-input-prompt nil :foreground "black")
+					  :config (set-face-attribute
+						   'jupyter-repl-output-prompt nil :foreground "grey")
+					  (setq company-backends '(company-capf))))
+       (setq jupyter-repl-prompt-margin-width 4)))
+
+   ;; associated jupyter-stata with stata (fixes fontification if using pygmentize for html export)
+   (add-to-list 'org-src-lang-modes '("jupyter-stata" . stata))
+   (add-to-list 'org-src-lang-modes '("Jupyter-Stata" . stata)) 
+   ;; you **may** need this for latex output syntax highlighting
+   ;; (add-to-list 'org-latex-minted-langs '(stata "stata"))
+
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
@@ -299,7 +332,7 @@
  'org-babel-load-languages
  '(
    (python . t)
-   (ipython . t)
+   ;; (ipython . t) ;; As indicated here https://rlhick.people.wm.edu/posts/stata_kernel_emacs.html
    (jupyter . t)
    (octave . t)
    (julia . t)
@@ -315,7 +348,7 @@
 
 (citeproc-org-setup)
 
-  (use-package Iedit
+  (use-package iedit
     :ensure t)
 
 (use-package avy
@@ -376,6 +409,9 @@
       :ensure t
       :config
       (global-pretty-mode t)))
+
+  (use-package synosaurus
+  :ensure t)
 
 (use-package flyspell
   :defer t
