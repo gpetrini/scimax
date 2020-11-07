@@ -200,7 +200,8 @@
    (add-to-list 'org-src-lang-modes '("jupyter-stata" . stata))
    (add-to-list 'org-src-lang-modes '("Jupyter-Stata" . stata)) 
    ;; you **may** need this for latex output syntax highlighting
-   ;; (add-to-list 'org-latex-minted-langs '(stata "stata"))
+ (add-to-list 'org-latex-minted-langs '(stata "stata"))
+ (setq inferior-STA-program-name "/usr/local/bin/jupyter-console")
 
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
@@ -213,6 +214,7 @@
 ;; Link this language to ess-julia-mode (although it should be done by default):
 (setq org-src-lang-modes
       (append org-src-lang-modes '(("ess-julia" . ess-julia))))
+
 
 (add-to-list 'org-structure-template-alist
 	     '("j" . "src ess-julia :results output :session *julia* :exports both"))
@@ -335,7 +337,8 @@
    ;; (ipython . t) ;; As indicated here https://rlhick.people.wm.edu/posts/stata_kernel_emacs.html
    (jupyter . t)
    (octave . t)
-   (julia . t)
+   (stata . t)
+   ;; (jupyter-stata . t)
    (ess-julia . t)))
 
 (setq org-latex-pdf-process
@@ -516,10 +519,13 @@
                            (?\[ . ?\])
                            (?\" . ?\")
                            ))
+(setq electric-pair-inhibit-predicate
+      `(lambda (c)
+         (if (char-equal c ?\<) t (,electric-pair-inhibit-predicate c))))
 (electric-pair-mode t)
 
 (add-to-list 'org-structure-template-alist
-	       '("el" "#+BEGIN_SRC elisp\n?\n#+END_SRC"))
+	     '("el" . "src elisp"))
 
 (use-package helm
   :ensure t
